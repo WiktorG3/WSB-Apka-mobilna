@@ -1,50 +1,50 @@
-# Welcome to your Expo app 👋
+# Planer treningów
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Projekt zaliczeniowy z przedmiotu „Języki programowania Objective-C/Swift" - Mobilna Aplikacja "Planer treningów".
 
-## Get started
+Technologie: React Native, Expo SDK 54, TypeScript, SQLite, Zustand, NativeWind.
 
-1. Install dependencies
+## Opis
 
-   ```bash
-   npm install
-   ```
+Aplikacja pozwala użytkownikowi tworzyć własne plany treningowe (rutyny), a potem na ich podstawie przeprowadzać trening: zapisuje kolejne serie (ciężar i powtórzenia), odhacza wykonane i korzysta z timera odpoczynku między seriami. Zakończony trening trafia do historii, a aplikacja wylicza podstawowe statystyki i rekordy.
 
-2. Start the app
+## Wymagania funkcjonalne
 
-   ```bash
-   npx expo start
-   ```
+1. **Biblioteka ćwiczeń** - przeglądanie i wyszukiwanie ćwiczeń z bazy oraz dodawanie własnych.
+2. **Plany treningowe** - tworzenie i edycja rutyn z ćwiczeniami i ilością serii.
+3. **Śledzenie treningu** - zapisywanie serii (ciężar x powtórzenia) i oznaczanie ich jako wykonane.
+4. **Timer odpoczynku** - odliczanie przerwy po wykonanej serii, można go skrócić, wydłużyć albo pominąć.
+5. **Historia treningów** - lista zakończonych treningów ze szczegółami (data, czas, objętość).
+6. **Statystyki** - liczba treningów, łączna objętość i rekordy dla poszczególnych ćwiczeń.
 
-In the output, you'll find options to open the app in a
+## Wymagania pozafunkcjonalne
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. **Działanie offline** - pełna funkcjonalność bez internetu i bez zewnętrznych API.
+2. **Prywatność** - dane treningowe zostają na telefonie, nic nie jest wysyłane na serwer.
+3. **Prostota obsługi** - najważniejsze akcje (start treningu, dodanie serii) w 1-2 dotknięciach.
+4. **Architektura** - logika oddzielona od widoku, kod w TypeScript ze ścisłym typowaniem.
+5. **Interfejs po polsku** - cała aplikacja w języku polskim, w ciemnym motywie.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Potencjalni odbiorcy
 
-## Get a fresh project
+- Osoby trenujące na siłowni, które chcą śledzić swoje postępy.
+- Trenerzy personalni przygotowujący plany dla podopiecznych.
 
-When you're ready, run:
+## Korzyści dla użytkownika
 
-```bash
-npm run reset-project
+- Śledzenie postępów (objętość, rekordy) motywuje do dalszych treningów.
+- Gotowe plany pozwalają od razu zacząć trening, bez układania go za każdym razem.
+- Działa bez internetu, więc sprawdza się na siłowni bez zasięgu.
+
+## Uruchomienie
+
+```
+pnpm install
+pnpm start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Następnie zeskanuj kod QR w aplikacji Expo Go (Android lub iOS). Gdy sieć lokalna jest zablokowana (np. przez firewall), użyj tunelu:
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+pnpm start --tunnel
+```
