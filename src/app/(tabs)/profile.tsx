@@ -2,8 +2,8 @@ import { Text, View } from 'react-native';
 
 export default function ProfileScreen() {
   return (
-    <View style={{ flex: 1, backgroundColor: '#151718', alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ color: '#ECEDEE', fontSize: 20 }}>Profil</Text>
+    <View className="flex-1 bg-background items-center justify-center">
+      <Text className="text-foreground text-xl">Profil</Text>
     </View>
   );
 }
