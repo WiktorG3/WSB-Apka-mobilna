@@ -1,15 +1,37 @@
 import { useRouter } from 'expo-router';
-import { FlatList, Text } from 'react-native';
+import { Alert, FlatList, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '@/components/empty-state';
 import { PrimaryButton } from '@/components/primary-button';
 import { RoutineCard } from '@/components/routine-card';
 import { useRoutines } from '@/hooks/use-routines';
+import { startWorkoutFromRoutine } from '@/lib/workouts';
+import { useActiveWorkout } from '@/store/active-workout';
 
 export default function TrainingScreen() {
   const router = useRouter();
   const { routines, loading } = useRoutines();
+  const workoutId = useActiveWorkout((s) => s.workoutId);
+  const setWorkoutId = useActiveWorkout((s) => s.setWorkoutId);
+
+  const handleStart = async (routineId: number) => {
+    if (workoutId !== null) {
+      Alert.alert(
+        'Masz trening w trakcie',
+        'Najpierw wznów lub zakończ aktywny trening.',
+        [{ text: 'OK' }],
+      );
+      return;
+    }
+    try {
+      const newId = await startWorkoutFromRoutine(routineId);
+      setWorkoutId(newId);
+      router.push({ pathname: '/workout/[id]', params: { id: newId } });
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się rozpocząć treningu.');
+    }
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
@@ -22,6 +44,7 @@ export default function TrainingScreen() {
           <RoutineCard
             routine={item}
             onPress={() => router.push({ pathname: '/routine/[id]', params: { id: item.id } })}
+            onStart={() => handleStart(item.id)}
           />
         )}
         ListEmptyComponent={loading ? null : <EmptyState message="Brak rutyn" />}
