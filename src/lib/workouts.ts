@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
 
 import { db } from '@/db/client';
 import {
@@ -15,6 +15,9 @@ export type WorkoutDetail = {
   id: number;
   name: string;
   startedAt: Date;
+  finishedAt: Date | null;
+  durationSec: number | null;
+  totalVolume: number | null;
   exercises: {
     workoutExerciseId: number;
     exerciseId: number;
@@ -35,6 +38,36 @@ export type ActiveWorkoutSummary = {
   name: string;
   startedAt: Date;
 };
+
+export type WorkoutHistoryItem = {
+  id: number;
+  name: string;
+  finishedAt: Date;
+  durationSec: number | null;
+  totalVolume: number | null;
+};
+
+export async function getFinishedWorkouts(): Promise<WorkoutHistoryItem[]> {
+  const rows = await db
+    .select({
+      id: workouts.id,
+      name: workouts.name,
+      finishedAt: workouts.finishedAt,
+      durationSec: workouts.durationSec,
+      totalVolume: workouts.totalVolume,
+    })
+    .from(workouts)
+    .where(isNotNull(workouts.finishedAt))
+    .orderBy(desc(workouts.finishedAt));
+
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    finishedAt: r.finishedAt as Date,
+    durationSec: r.durationSec,
+    totalVolume: r.totalVolume,
+  }));
+}
 
 export async function getActiveWorkout(): Promise<ActiveWorkoutSummary | null> {
   const result = await db
@@ -135,6 +168,9 @@ export async function getWorkoutDetail(id: number): Promise<WorkoutDetail | null
     id: workout.id,
     name: workout.name,
     startedAt: workout.startedAt,
+    finishedAt: workout.finishedAt,
+    durationSec: workout.durationSec,
+    totalVolume: workout.totalVolume,
     exercises: we.map((w) => ({
       workoutExerciseId: w.workoutExerciseId,
       exerciseId: w.exerciseId,
@@ -187,6 +223,10 @@ export async function addWorkoutSet(
 
 export async function removeWorkoutSet(setId: number): Promise<void> {
   await db.delete(sets).where(eq(sets.id, setId));
+}
+
+export async function deleteWorkout(id: number): Promise<void> {
+  await db.delete(workouts).where(eq(workouts.id, id));
 }
 
 export async function finishWorkout(id: number): Promise<void> {
