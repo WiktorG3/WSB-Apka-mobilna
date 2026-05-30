@@ -1,10 +1,11 @@
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 import { EmptyState } from '@/components/empty-state';
 import { PrimaryButton } from '@/components/primary-button';
+import { RestTimerBanner } from '@/components/rest-timer-banner';
 import { WorkoutExerciseCard, type SessionSet } from '@/components/workout-exercise-card';
 import { useWorkout } from '@/hooks/use-workout';
 import {
@@ -14,10 +15,12 @@ import {
   updateWorkoutSet,
 } from '@/lib/workouts';
 import { useActiveWorkout } from '@/store/active-workout';
+import { useRestTimer } from '@/store/rest-timer';
 
 type ExerciseDraft = {
   workoutExerciseId: number;
   name: string;
+  restSec: number | null;
   sets: SessionSet[];
 };
 
@@ -28,6 +31,7 @@ export default function ActiveWorkoutScreen() {
   const workoutId = Number(id);
   const { detail, loading } = useWorkout(workoutId);
   const clearActive = useActiveWorkout((s) => s.clear);
+  const startTimer = useRestTimer((s) => s.start);
 
   const [draft, setDraft] = useState<ExerciseDraft[]>([]);
   const [finishing, setFinishing] = useState(false);
@@ -38,6 +42,7 @@ export default function ActiveWorkoutScreen() {
       detail.exercises.map((ex) => ({
         workoutExerciseId: ex.workoutExerciseId,
         name: ex.exerciseName,
+        restSec: ex.restSec,
         sets: ex.sets.map((s) => ({
           id: s.id,
           weight: s.weight === 0 ? '' : String(s.weight),
@@ -47,6 +52,8 @@ export default function ActiveWorkoutScreen() {
       })),
     );
   }, [detail]);
+
+  useEffect(() => () => useRestTimer.getState().stop(), []);
 
   const patchSet = (setId: number, patch: Partial<SessionSet>) => {
     setDraft((prev) =>
@@ -75,6 +82,13 @@ export default function ActiveWorkoutScreen() {
     const next = !set.isDone;
     patchSet(setId, { isDone: next });
     await updateWorkoutSet(setId, { isDone: next });
+
+    if (next) {
+      const exercise = draft.find((ex) => ex.sets.some((s) => s.id === setId));
+      if (exercise?.restSec && exercise.restSec > 0) {
+        startTimer(exercise.restSec, exercise.name);
+      }
+    }
   };
 
   const removeSet = async (setId: number) => {
@@ -128,34 +142,37 @@ export default function ActiveWorkoutScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={headerHeight}>
-      <ScrollView
-        className="flex-1 bg-background"
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: 40 }}>
-        <Stack.Screen options={{ title: detail?.name ?? 'Trening' }} />
+    <View className="flex-1 bg-background">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={headerHeight}>
+        <ScrollView
+          className="flex-1"
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: 40 }}>
+          <Stack.Screen options={{ title: detail?.name ?? 'Trening' }} />
 
-        {draft.map((exercise) => (
-          <WorkoutExerciseCard
-            key={exercise.workoutExerciseId}
-            name={exercise.name}
-            sets={exercise.sets}
-            onChangeWeight={(setId, t) => patchSet(setId, { weight: t })}
-            onChangeReps={(setId, t) => patchSet(setId, { reps: t })}
-            onCommitWeight={commitWeight}
-            onCommitReps={commitReps}
-            onToggleDone={toggleDone}
-            onRemove={removeSet}
-            onAddSet={() => addSet(exercise.workoutExerciseId)}
-          />
-        ))}
+          {draft.map((exercise) => (
+            <WorkoutExerciseCard
+              key={exercise.workoutExerciseId}
+              name={exercise.name}
+              sets={exercise.sets}
+              onChangeWeight={(setId, t) => patchSet(setId, { weight: t })}
+              onChangeReps={(setId, t) => patchSet(setId, { reps: t })}
+              onCommitWeight={commitWeight}
+              onCommitReps={commitReps}
+              onToggleDone={toggleDone}
+              onRemove={removeSet}
+              onAddSet={() => addSet(exercise.workoutExerciseId)}
+            />
+          ))}
 
-        <PrimaryButton title="Zakończ trening" onPress={handleFinish} disabled={finishing} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <PrimaryButton title="Zakończ trening" onPress={handleFinish} disabled={finishing} />
+        </ScrollView>
+        <RestTimerBanner />
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
