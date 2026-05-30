@@ -29,14 +29,24 @@ export type WorkoutDetail = {
   }[];
 };
 
-export async function getActiveWorkoutId(): Promise<number | null> {
+export type ActiveWorkoutSummary = {
+  id: number;
+  name: string;
+  startedAt: Date;
+};
+
+export async function getActiveWorkout(): Promise<ActiveWorkoutSummary | null> {
   const result = await db
-    .select({ id: workouts.id })
+    .select({
+      id: workouts.id,
+      name: workouts.name,
+      startedAt: workouts.startedAt,
+    })
     .from(workouts)
     .where(isNull(workouts.finishedAt))
     .orderBy(desc(workouts.startedAt))
     .limit(1);
-  return result.at(0)?.id ?? null;
+  return result.at(0) ?? null;
 }
 
 export async function startWorkoutFromRoutine(routineId: number): Promise<number> {

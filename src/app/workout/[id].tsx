@@ -27,7 +27,7 @@ export default function ActiveWorkoutScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const workoutId = Number(id);
   const { detail, loading } = useWorkout(workoutId);
-  const clearWorkoutId = useActiveWorkout((s) => s.clearWorkoutId);
+  const clearActive = useActiveWorkout((s) => s.clear);
 
   const [draft, setDraft] = useState<ExerciseDraft[]>([]);
   const [finishing, setFinishing] = useState(false);
@@ -108,7 +108,7 @@ export default function ActiveWorkoutScreen() {
           setFinishing(true);
           try {
             await finishWorkout(workoutId);
-            clearWorkoutId();
+            clearActive();
             router.back();
           } finally {
             setFinishing(false);

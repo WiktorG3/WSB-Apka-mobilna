@@ -10,7 +10,7 @@ import '../../global.css';
 import { palette } from '@/constants/theme';
 import { db } from '@/db/client';
 import { seedExercises } from '@/db/seed';
-import { getActiveWorkoutId } from '@/lib/workouts';
+import { getActiveWorkout } from '@/lib/workouts';
 import { useActiveWorkout } from '@/store/active-workout';
 import migrations from '../../drizzle/migrations';
 
@@ -29,9 +29,15 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!seeded) return;
-    getActiveWorkoutId()
-      .then((id) => {
-        if (id !== null) useActiveWorkout.getState().setWorkoutId(id);
+    getActiveWorkout()
+      .then((summary) => {
+        if (summary) {
+          useActiveWorkout.getState().setActive({
+            id: summary.id,
+            name: summary.name,
+            startedAt: summary.startedAt.getTime(),
+          });
+        }
       })
       .catch(() => {});
   }, [seeded]);

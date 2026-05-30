@@ -1,13 +1,19 @@
 import { create } from 'zustand';
 
-type ActiveWorkoutState = {
-  workoutId: number | null;
-  setWorkoutId: (id: number) => void;
-  clearWorkoutId: () => void;
+export type ActiveWorkout = {
+  id: number;
+  name: string;
+  startedAt: number;
 };
 
-export const useActiveWorkout = create<ActiveWorkoutState>((set) => ({
-  workoutId: null,
-  setWorkoutId: (id) => set({ workoutId: id }),
-  clearWorkoutId: () => set({ workoutId: null }),
+type State = {
+  active: ActiveWorkout | null;
+  setActive: (workout: ActiveWorkout) => void;
+  clear: () => void;
+};
+
+export const useActiveWorkout = create<State>((set) => ({
+  active: null,
+  setActive: (active) => set({ active }),
+  clear: () => set({ active: null }),
 }));
