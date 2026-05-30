@@ -19,6 +19,7 @@ export type WorkoutDetail = {
     workoutExerciseId: number;
     exerciseId: number;
     exerciseName: string;
+    restSec: number | null;
     sets: {
       id: number;
       position: number;
@@ -77,6 +78,7 @@ export async function startWorkoutFromRoutine(routineId: number): Promise<number
           workoutId,
           exerciseId: r.exerciseId,
           position: r.position,
+          restSec: r.restSec,
         })
         .returning({ id: workoutExercises.id });
 
@@ -112,6 +114,7 @@ export async function getWorkoutDetail(id: number): Promise<WorkoutDetail | null
       workoutExerciseId: workoutExercises.id,
       exerciseId: workoutExercises.exerciseId,
       exerciseName: exercises.name,
+      restSec: workoutExercises.restSec,
     })
     .from(workoutExercises)
     .innerJoin(exercises, eq(exercises.id, workoutExercises.exerciseId))
@@ -136,6 +139,7 @@ export async function getWorkoutDetail(id: number): Promise<WorkoutDetail | null
       workoutExerciseId: w.workoutExerciseId,
       exerciseId: w.exerciseId,
       exerciseName: w.exerciseName,
+      restSec: w.restSec,
       sets: allSets
         .filter((s) => s.workoutExerciseId === w.workoutExerciseId)
         .map((s) => ({

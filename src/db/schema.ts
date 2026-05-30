@@ -89,6 +89,7 @@ export const workoutExercises = sqliteTable("workout_exercises", {
     .notNull()
     .references(() => exercises.id, { onDelete: "restrict" }),
   position: integer("position").notNull(),
+  restSec: integer("rest_sec"),
 });
 
 // zrobione serie w treningu
