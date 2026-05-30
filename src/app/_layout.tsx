@@ -10,6 +10,8 @@ import '../../global.css';
 import { palette } from '@/constants/theme';
 import { db } from '@/db/client';
 import { seedExercises } from '@/db/seed';
+import { getActiveWorkoutId } from '@/lib/workouts';
+import { useActiveWorkout } from '@/store/active-workout';
 import migrations from '../../drizzle/migrations';
 
 export const unstable_settings = {
@@ -24,6 +26,15 @@ export default function RootLayout() {
     if (!success) return;
     seedExercises().finally(() => setSeeded(true));
   }, [success]);
+
+  useEffect(() => {
+    if (!seeded) return;
+    getActiveWorkoutId()
+      .then((id) => {
+        if (id !== null) useActiveWorkout.getState().setWorkoutId(id);
+      })
+      .catch(() => {});
+  }, [seeded]);
 
   if (error) {
     return (
