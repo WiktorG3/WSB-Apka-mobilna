@@ -1,7 +1,7 @@
-import { and, asc, count, eq } from 'drizzle-orm';
+import { asc, count, eq, inArray } from 'drizzle-orm';
 
 import { db } from '@/db/client';
-import { routineExercises, routineSets, routines } from '@/db/schema';
+import { exercises, routineExercises, routineSets, routines } from '@/db/schema';
 
 export type RoutineSummary = {
   id: number;
@@ -63,12 +63,69 @@ export async function createRoutine(input: RoutineInput): Promise<number> {
   });
 }
 
+export async function getRoutineDetail(id: number): Promise<RoutineDetail | null> {
+  const [routine] = await db.select().from(routines).where(eq(routines.id, id)).limit(1);
+  if (!routine) return null;
+
+  const re = await db
+    .select({
+      routineExerciseId: routineExercises.id,
+      exerciseId: routineExercises.exerciseId,
+      exerciseName: exercises.name,
+      restSec: routineExercises.restSec,
+    })
+    .from(routineExercises)
+    .innerJoin(exercises, eq(exercises.id, routineExercises.exerciseId))
+    .where(eq(routineExercises.routineId, id))
+    .orderBy(asc(routineExercises.position));
+
+  const reIds = re.map((r) => r.routineExerciseId);
+  const sets =
+    reIds.length === 0
+      ? []
+      : await db
+          .select()
+          .from(routineSets)
+          .where(inArray(routineSets.routineExerciseId, reIds))
+          .orderBy(asc(routineSets.position));
+
+  return {
+    id: routine.id,
+    name: routine.name,
+    exercises: re.map((r) => ({
+      routineExerciseId: r.routineExerciseId,
+      exerciseId: r.exerciseId,
+      exerciseName: r.exerciseName,
+      restSec: r.restSec,
+      sets: sets
+        .filter((s) => s.routineExerciseId === r.routineExerciseId)
+        .map((s) => ({
+          id: s.id,
+          targetWeight: s.targetWeight,
+          targetReps: s.targetReps,
+        })),
+    })),
+  };
+}
+
+export async function updateRoutine(id: number, input: RoutineInput): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.update(routines).set({ name: input.name }).where(eq(routines.id, id));
+    await tx.delete(routineExercises).where(eq(routineExercises.routineId, id));
+    await insertRoutineChildren(tx, id, input.exercises);
+  });
+}
+
+export async function deleteRoutine(id: number): Promise<void> {
+  await db.delete(routines).where(eq(routines.id, id));
+}
+
 async function insertRoutineChildren(
   tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
   routineId: number,
-  exercises: RoutineExerciseInput[],
+  list: RoutineExerciseInput[],
 ): Promise<void> {
-  for (const [position, exercise] of exercises.entries()) {
+  for (const [position, exercise] of list.entries()) {
     const [inserted] = await tx
       .insert(routineExercises)
       .values({

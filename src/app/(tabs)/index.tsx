@@ -18,7 +18,12 @@ export default function TrainingScreen() {
       <FlatList
         data={routines}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => <RoutineCard routine={item} />}
+        renderItem={({ item }) => (
+          <RoutineCard
+            routine={item}
+            onPress={() => router.push({ pathname: '/routine/[id]', params: { id: item.id } })}
+          />
+        )}
         ListEmptyComponent={loading ? null : <EmptyState message="Brak rutyn" />}
       />
     </SafeAreaView>
