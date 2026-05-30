@@ -49,6 +49,10 @@ export default function RootLayout() {
           name="add-exercise"
           options={{ presentation: 'modal', title: 'Dodaj ćwiczenie' }}
         />
+        <Stack.Screen
+          name="exercise/picker"
+          options={{ presentation: 'modal', title: 'Wybierz ćwiczenia' }}
+        />
       </Stack>
       <StatusBar style="light" />
     </ThemeProvider>
