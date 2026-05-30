@@ -1,7 +1,12 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
-import { getWorkoutDetail, type WorkoutDetail } from '@/lib/workouts';
+import {
+  getFinishedWorkouts,
+  getWorkoutDetail,
+  type WorkoutDetail,
+  type WorkoutHistoryItem,
+} from '@/lib/workouts';
 
 export function useWorkout(id: number): { detail: WorkoutDetail | null; loading: boolean } {
   const [detail, setDetail] = useState<WorkoutDetail | null>(null);
@@ -19,4 +24,25 @@ export function useWorkout(id: number): { detail: WorkoutDetail | null; loading:
   );
 
   return { detail, loading };
+}
+
+export function useFinishedWorkouts(): {
+  workouts: WorkoutHistoryItem[];
+  loading: boolean;
+} {
+  const [workouts, setWorkouts] = useState<WorkoutHistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      getFinishedWorkouts()
+        .then((data) => {
+          setWorkouts(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }, []),
+  );
+
+  return { workouts, loading };
 }
