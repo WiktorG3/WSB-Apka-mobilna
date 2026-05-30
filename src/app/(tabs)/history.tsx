@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { FlatList, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,6 +7,7 @@ import { WorkoutHistoryCard } from '@/components/workout-history-card';
 import { useFinishedWorkouts } from '@/hooks/use-workout';
 
 export default function HistoryScreen() {
+  const router = useRouter();
   const { workouts, loading } = useFinishedWorkouts();
 
   return (
@@ -14,7 +16,12 @@ export default function HistoryScreen() {
       <FlatList
         data={workouts}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => <WorkoutHistoryCard workout={item} />}
+        renderItem={({ item }) => (
+          <WorkoutHistoryCard
+            workout={item}
+            onPress={() => router.push({ pathname: '/history/[id]', params: { id: item.id } })}
+          />
+        )}
         ListEmptyComponent={
           loading ? null : <EmptyState message="Brak zakończonych treningów" />
         }
