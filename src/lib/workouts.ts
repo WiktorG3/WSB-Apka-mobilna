@@ -15,6 +15,9 @@ export type WorkoutDetail = {
   id: number;
   name: string;
   startedAt: Date;
+  finishedAt: Date | null;
+  durationSec: number | null;
+  totalVolume: number | null;
   exercises: {
     workoutExerciseId: number;
     exerciseId: number;
@@ -165,6 +168,9 @@ export async function getWorkoutDetail(id: number): Promise<WorkoutDetail | null
     id: workout.id,
     name: workout.name,
     startedAt: workout.startedAt,
+    finishedAt: workout.finishedAt,
+    durationSec: workout.durationSec,
+    totalVolume: workout.totalVolume,
     exercises: we.map((w) => ({
       workoutExerciseId: w.workoutExerciseId,
       exerciseId: w.exerciseId,
@@ -217,6 +223,10 @@ export async function addWorkoutSet(
 
 export async function removeWorkoutSet(setId: number): Promise<void> {
   await db.delete(sets).where(eq(sets.id, setId));
+}
+
+export async function deleteWorkout(id: number): Promise<void> {
+  await db.delete(workouts).where(eq(workouts.id, id));
 }
 
 export async function finishWorkout(id: number): Promise<void> {
