@@ -43,8 +43,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DarkTheme}>
-      <Stack>
+      <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="add-exercise"
+          options={{ presentation: 'modal', title: 'Dodaj ćwiczenie' }}
+        />
       </Stack>
       <StatusBar style="light" />
     </ThemeProvider>

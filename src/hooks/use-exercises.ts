@@ -2,7 +2,7 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 import type { Exercise } from '@/db/schema';
-import { getExercises } from '@/lib/exercises';
+import { getExerciseById, getExercises } from '@/lib/exercises';
 
 export function useExercises(query: string): { exercises: Exercise[]; loading: boolean } {
   const [all, setAll] = useState<Exercise[]>([]);
@@ -10,10 +10,12 @@ export function useExercises(query: string): { exercises: Exercise[]; loading: b
 
   useFocusEffect(
     useCallback(() => {
-      getExercises().then((data) => {
-        setAll(data);
-        setLoading(false);
-      });
+      getExercises()
+        .then((data) => {
+          setAll(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
     }, []),
   );
 
@@ -23,4 +25,22 @@ export function useExercises(query: string): { exercises: Exercise[]; loading: b
     : all;
 
   return { exercises, loading };
+}
+
+export function useExercise(id: number): { exercise: Exercise | undefined; loading: boolean } {
+  const [exercise, setExercise] = useState<Exercise | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      getExerciseById(id)
+        .then((data) => {
+          setExercise(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }, [id]),
+  );
+
+  return { exercise, loading };
 }
