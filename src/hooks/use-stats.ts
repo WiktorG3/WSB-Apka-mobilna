@@ -8,22 +8,26 @@ import {
   type OverallStats,
 } from '@/lib/stats';
 
-export function useOverallStats(): { stats: OverallStats | null; loading: boolean } {
+export function useOverallStats(): {
+  stats: OverallStats | null;
+  loading: boolean;
+  refetch: () => void;
+} {
   const [stats, setStats] = useState<OverallStats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useFocusEffect(
-    useCallback(() => {
-      getOverallStats()
-        .then((data) => {
-          setStats(data);
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
-    }, []),
-  );
+  const load = useCallback(() => {
+    getOverallStats()
+      .then((data) => {
+        setStats(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
-  return { stats, loading };
+  useFocusEffect(load);
+
+  return { stats, loading, refetch: load };
 }
 
 export function useExercisePRs(id: number): { prs: ExercisePRs | null; loading: boolean } {
