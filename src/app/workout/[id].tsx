@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/primary-button';
 import { RestTimerBanner } from '@/components/rest-timer-banner';
 import { WorkoutExerciseCard, type SessionSet } from '@/components/workout-exercise-card';
 import { useWorkout } from '@/hooks/use-workout';
+import { parseFloatOrNull, parseIntOrNull } from '@/lib/parse';
 import {
   addWorkoutSet,
   finishWorkout,
@@ -67,13 +68,13 @@ export default function ActiveWorkoutScreen() {
   const commitWeight = async (setId: number) => {
     const set = findSet(draft, setId);
     if (!set) return;
-    await updateWorkoutSet(setId, { weight: parseNumber(set.weight) });
+    await updateWorkoutSet(setId, { weight: parseFloatOrNull(set.weight) ?? 0 });
   };
 
   const commitReps = async (setId: number) => {
     const set = findSet(draft, setId);
     if (!set) return;
-    await updateWorkoutSet(setId, { reps: parseIntZero(set.reps) });
+    await updateWorkoutSet(setId, { reps: parseIntOrNull(set.reps) ?? 0 });
   };
 
   const toggleDone = async (setId: number) => {
@@ -184,16 +185,3 @@ function findSet(draft: ExerciseDraft[], setId: number): SessionSet | undefined 
   return undefined;
 }
 
-function parseNumber(s: string): number {
-  const normalized = s.replace(',', '.').trim();
-  if (normalized === '') return 0;
-  const n = parseFloat(normalized);
-  return Number.isFinite(n) ? n : 0;
-}
-
-function parseIntZero(s: string): number {
-  const trimmed = s.trim();
-  if (trimmed === '') return 0;
-  const n = parseInt(trimmed, 10);
-  return Number.isFinite(n) ? n : 0;
-}
