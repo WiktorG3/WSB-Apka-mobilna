@@ -27,8 +27,15 @@ export default function ExerciseDetailScreen() {
         text: 'Usuń',
         style: 'destructive',
         onPress: async () => {
-          await deleteCustomExercise(numericId);
-          router.back();
+          try {
+            await deleteCustomExercise(numericId);
+            router.back();
+          } catch {
+            Alert.alert(
+              'Nie można usunąć',
+              'To ćwiczenie jest używane w rutynie lub w historii treningów. Najpierw usuń je z planów albo z historii.',
+            );
+          }
         },
       },
     ]);
