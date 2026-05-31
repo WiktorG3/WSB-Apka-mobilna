@@ -137,3 +137,11 @@ Tabele dzielą się na dwie gałęzie: **plan** (`routines` → `routine_exercis
 - `exercises` jest używane jako referencja w obu gałęziach (`routine_exercises.exercise_id` i `workout_exercises.exercise_id`).
 
 Kaskady na FK dziećmi pozwalają usunąć rutynę albo trening jednym `DELETE`. Dla `exercises` użyte jest `restrict` - nie można usunąć ćwiczenia z biblioteki, jeśli jest gdziekolwiek użyte.
+
+# Grupa 30
+
+- Wiktor Gronostaj 165812
+
+- Seweryn Filipkowski 165666
+
+- Adrian Wojciechowski 167079
