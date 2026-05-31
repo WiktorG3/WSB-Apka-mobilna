@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 
-import { muscleGroupLabels } from '@/constants/labels';
+import { equipmentLabels, muscleGroupLabels } from '@/constants/labels';
 import { palette } from '@/constants/theme';
 import type { Exercise } from '@/db/schema';
 
@@ -23,7 +23,9 @@ export function ExercisePickerRow({ exercise, selected, onToggle }: Props) {
       />
       <View className="ml-3">
         <Text className="text-base text-foreground">{exercise.name}</Text>
-        <Text className="text-sm text-muted">{muscleGroupLabels[exercise.muscleGroup]}</Text>
+        <Text className="text-sm text-muted">
+          {muscleGroupLabels[exercise.muscleGroup]} · {equipmentLabels[exercise.equipment]}
+        </Text>
       </View>
     </Pressable>
   );

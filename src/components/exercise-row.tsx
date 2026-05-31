@@ -1,6 +1,6 @@
 import { Pressable, Text } from 'react-native';
 
-import { muscleGroupLabels } from '@/constants/labels';
+import { equipmentLabels, muscleGroupLabels } from '@/constants/labels';
 import type { Exercise } from '@/db/schema';
 
 type Props = {
@@ -15,7 +15,9 @@ export function ExerciseRow({ exercise, onPress }: Props) {
       disabled={!onPress}
       className="border-b border-border px-4 py-3 active:bg-card">
       <Text className="text-base text-foreground">{exercise.name}</Text>
-      <Text className="text-sm text-muted">{muscleGroupLabels[exercise.muscleGroup]}</Text>
+      <Text className="text-sm text-muted">
+        {muscleGroupLabels[exercise.muscleGroup]} · {equipmentLabels[exercise.equipment]}
+      </Text>
     </Pressable>
   );
 }

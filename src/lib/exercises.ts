@@ -1,10 +1,11 @@
-import { and, asc, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 import { db } from '@/db/client';
 import { exercises, type Equipment, type Exercise, type MuscleGroup } from '@/db/schema';
 
 export async function getExercises(): Promise<Exercise[]> {
-  return db.select().from(exercises).orderBy(asc(exercises.name));
+  const all = await db.select().from(exercises);
+  return all.sort((a, b) => a.name.localeCompare(b.name, 'pl', { sensitivity: 'base' }));
 }
 
 export async function getExerciseById(id: number): Promise<Exercise | undefined> {
