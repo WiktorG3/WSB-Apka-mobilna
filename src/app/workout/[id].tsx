@@ -11,6 +11,7 @@ import { useWorkout } from '@/hooks/use-workout';
 import { parseFloatOrNull, parseIntOrNull } from '@/lib/parse';
 import {
   addWorkoutSet,
+  deleteWorkout,
   finishWorkout,
   removeWorkoutSet,
   updateWorkoutSet,
@@ -133,6 +134,27 @@ export default function ActiveWorkoutScreen() {
     ]);
   };
 
+  const handleDiscard = () => {
+    Alert.alert('Odrzucić trening?', 'Tego treningu nie zapiszemy w historii.', [
+      { text: 'Anuluj', style: 'cancel' },
+      {
+        text: 'Odrzuć',
+        style: 'destructive',
+        onPress: async () => {
+          if (finishing) return;
+          setFinishing(true);
+          try {
+            await deleteWorkout(workoutId);
+            clearActive();
+            router.back();
+          } finally {
+            setFinishing(false);
+          }
+        },
+      },
+    ]);
+  };
+
   if (!loading && !detail) {
     return (
       <>
@@ -170,6 +192,12 @@ export default function ActiveWorkoutScreen() {
           ))}
 
           <PrimaryButton title="Zakończ trening" onPress={handleFinish} disabled={finishing} />
+          <PrimaryButton
+            title="Odrzuć trening"
+            onPress={handleDiscard}
+            variant="danger"
+            disabled={finishing}
+          />
         </ScrollView>
         <RestTimerBanner />
       </KeyboardAvoidingView>
