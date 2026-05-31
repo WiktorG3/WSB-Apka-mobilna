@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Alert, FlatList, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,6 +7,7 @@ import { ActiveWorkoutBanner } from '@/components/active-workout-banner';
 import { EmptyState } from '@/components/empty-state';
 import { PrimaryButton } from '@/components/primary-button';
 import { RoutineCard } from '@/components/routine-card';
+import { palette } from '@/constants/theme';
 import { useRoutines } from '@/hooks/use-routines';
 import { startWorkoutFromRoutine } from '@/lib/workouts';
 import { useActiveWorkout } from '@/store/active-workout';
@@ -42,6 +44,7 @@ export default function TrainingScreen() {
       <FlatList
         data={routines}
         keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={{ flexGrow: 1 }}
         renderItem={({ item }) => (
           <RoutineCard
             routine={item}
@@ -49,7 +52,15 @@ export default function TrainingScreen() {
             onStart={() => handleStart(item.id, item.name)}
           />
         )}
-        ListEmptyComponent={loading ? null : <EmptyState message="Brak rutyn" />}
+        ListEmptyComponent={
+          loading ? null : (
+            <EmptyState
+              icon={<Feather name="clipboard" size={56} color={palette.muted} />}
+              title="Brak rutyn"
+              hint="Kliknij 'Nowa rutyna' żeby dodać pierwszy plan treningowy"
+            />
+          )
+        }
       />
     </SafeAreaView>
   );

@@ -137,7 +137,7 @@ export default function ActiveWorkoutScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Nie znaleziono' }} />
-        <EmptyState message="Trening nie istnieje" />
+        <EmptyState title="Trening nie istnieje" />
       </>
     );
   }

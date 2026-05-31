@@ -76,7 +76,7 @@ export default function EditRoutineScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Nie znaleziono' }} />
-        <EmptyState message="Nie znaleziono rutyny" />
+        <EmptyState title="Nie znaleziono rutyny" />
       </>
     );
   }

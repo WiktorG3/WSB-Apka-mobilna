@@ -1,9 +1,11 @@
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { FlatList, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '@/components/empty-state';
 import { WorkoutHistoryCard } from '@/components/workout-history-card';
+import { palette } from '@/constants/theme';
 import { useFinishedWorkouts } from '@/hooks/use-workout';
 
 export default function HistoryScreen() {
@@ -16,6 +18,7 @@ export default function HistoryScreen() {
       <FlatList
         data={workouts}
         keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={{ flexGrow: 1 }}
         renderItem={({ item }) => (
           <WorkoutHistoryCard
             workout={item}
@@ -23,7 +26,13 @@ export default function HistoryScreen() {
           />
         )}
         ListEmptyComponent={
-          loading ? null : <EmptyState message="Brak zakończonych treningów" />
+          loading ? null : (
+            <EmptyState
+              icon={<Feather name="calendar" size={56} color={palette.muted} />}
+              title="Brak treningów w historii"
+              hint="Zakończony trening pojawi się tutaj z datą, czasem i objętością"
+            />
+          )
         }
       />
     </SafeAreaView>
