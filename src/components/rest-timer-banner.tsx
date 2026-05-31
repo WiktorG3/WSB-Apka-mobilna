@@ -8,6 +8,7 @@ import { useRestTimer } from '@/store/rest-timer';
 export function RestTimerBanner() {
   const endsAt = useRestTimer((s) => s.endsAt);
   const exerciseName = useRestTimer((s) => s.exerciseName);
+  const adjust = useRestTimer((s) => s.adjust);
   const stop = useRestTimer((s) => s.stop);
   const insets = useSafeAreaInsets();
   const [, setTick] = useState(0);
@@ -45,14 +46,24 @@ export function RestTimerBanner() {
   return (
     <View
       style={{ marginBottom: insets.bottom + 8 }}
-      className="mx-4 flex-row items-center rounded-lg border border-primary bg-card px-4 py-3">
+      className="mx-4 flex-row items-center rounded-lg border border-primary bg-card px-3 py-3">
       <View className="flex-1">
         <Text className="text-xs text-muted">Odpoczynek: {exerciseName}</Text>
         <Text className="text-2xl font-bold text-foreground">{formatted}</Text>
       </View>
       <Pressable
+        onPress={() => adjust(-15)}
+        className="mx-1 rounded-lg bg-background px-2 py-2 active:opacity-80">
+        <Text className="text-sm font-semibold text-foreground">-15s</Text>
+      </Pressable>
+      <Pressable
+        onPress={() => adjust(15)}
+        className="mx-1 rounded-lg bg-background px-2 py-2 active:opacity-80">
+        <Text className="text-sm font-semibold text-foreground">+15s</Text>
+      </Pressable>
+      <Pressable
         onPress={stop}
-        className="rounded-lg bg-background px-4 py-2 active:opacity-80">
+        className="ml-1 rounded-lg bg-background px-3 py-2 active:opacity-80">
         <Text className="text-sm font-semibold text-foreground">Pomiń</Text>
       </Pressable>
     </View>
