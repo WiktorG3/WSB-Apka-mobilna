@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Text } from 'react-native';
@@ -7,6 +8,7 @@ import { EmptyState } from '@/components/empty-state';
 import { ExerciseRow } from '@/components/exercise-row';
 import { PrimaryButton } from '@/components/primary-button';
 import { SearchBar } from '@/components/search-bar';
+import { palette } from '@/constants/theme';
 import { useExercises } from '@/hooks/use-exercises';
 
 export default function ExercisesScreen() {
@@ -22,13 +24,22 @@ export default function ExercisesScreen() {
       <FlatList
         data={exercises}
         keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={{ flexGrow: 1 }}
         renderItem={({ item }) => (
           <ExerciseRow
             exercise={item}
             onPress={() => router.push({ pathname: '/exercise/[id]', params: { id: item.id } })}
           />
         )}
-        ListEmptyComponent={loading ? null : <EmptyState message="Brak ćwiczeń" />}
+        ListEmptyComponent={
+          loading ? null : (
+            <EmptyState
+              icon={<Feather name="search" size={56} color={palette.muted} />}
+              title="Brak ćwiczeń"
+              hint="Spróbuj innego wyszukiwania lub dodaj własne ćwiczenie"
+            />
+          )
+        }
       />
     </SafeAreaView>
   );

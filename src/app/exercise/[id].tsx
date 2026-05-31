@@ -1,9 +1,11 @@
+import { Feather } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/empty-state';
 import { PrimaryButton } from '@/components/primary-button';
 import { equipmentLabels, muscleGroupLabels } from '@/constants/labels';
+import { palette } from '@/constants/theme';
 import { useExercise } from '@/hooks/use-exercises';
 import { useExercisePRs } from '@/hooks/use-stats';
 import { deleteCustomExercise } from '@/lib/exercises';
@@ -14,7 +16,7 @@ export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const numericId = Number(id);
   const { exercise, loading } = useExercise(numericId);
-  const { prs } = useExercisePRs(numericId);
+  const { prs, loading: prsLoading } = useExercisePRs(numericId);
   const router = useRouter();
 
   const handleDelete = () => {
@@ -36,7 +38,7 @@ export default function ExerciseDetailScreen() {
     <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: exercise?.name ?? 'Ładowanie...' }} />
       {loading ? null : !exercise ? (
-        <EmptyState message="Nie znaleziono ćwiczenia" />
+        <EmptyState title="Nie znaleziono ćwiczenia" />
       ) : (
         <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
           <View className="mx-4 my-4 rounded-lg bg-card p-4">
@@ -49,7 +51,18 @@ export default function ExerciseDetailScreen() {
               {equipmentLabels[exercise.equipment]}
             </Text>
           </View>
-          {prs && <PRsCard prs={prs} />}
+          {!prsLoading &&
+            (prs ? (
+              <PRsCard prs={prs} />
+            ) : (
+              <View className="my-4">
+                <EmptyState
+                  icon={<Feather name="award" size={56} color={palette.muted} />}
+                  title="Brak rekordów"
+                  hint="Tu pojawią się Twoje rekordy gdy wykonasz to ćwiczenie"
+                />
+              </View>
+            ))}
           {exercise.isCustom && (
             <PrimaryButton title="Usuń ćwiczenie" onPress={handleDelete} variant="danger" />
           )}

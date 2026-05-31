@@ -1,9 +1,11 @@
+import { Feather } from '@expo/vector-icons';
 import { Alert, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '@/components/empty-state';
 import { PrimaryButton } from '@/components/primary-button';
 import { StatCard } from '@/components/stat-card';
+import { palette } from '@/constants/theme';
 import { useOverallStats } from '@/hooks/use-stats';
 import { formatDuration } from '@/lib/format';
 import { resetUserData } from '@/lib/reset';
@@ -39,7 +41,11 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         <Text className="px-4 pb-2 pt-2 text-sm text-muted">Statystyki</Text>
         {loading ? null : !stats || stats.workoutCount === 0 ? (
-          <EmptyState message="Zrób pierwszy trening, żeby zobaczyć statystyki" />
+          <EmptyState
+            icon={<Feather name="bar-chart-2" size={56} color={palette.muted} />}
+            title="Brak statystyk"
+            hint="Zrób pierwszy trening, żeby zobaczyć podsumowanie"
+          />
         ) : (
           <>
             <StatCard label="Treningi" value={String(stats.workoutCount)} />
